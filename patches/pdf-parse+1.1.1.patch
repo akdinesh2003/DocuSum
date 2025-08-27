@@ -1,0 +1,13 @@
+diff --git a/node_modules/pdf-parse/lib/pdf-parse.js b/node_modules/pdf-parse/lib/pdf-parse.js
+index 23dca68..25b394e 100644
+--- a/node_modules/pdf-parse/lib/pdf-parse.js
++++ b/node_modules/pdf-parse/lib/pdf-parse.js
+@@ -6,7 +6,7 @@
+ 
+ // See: https://mozilla.github.io/pdf.js/getting_started/
+ // See: https://github.com/mozilla/pdf.js/blob/master/examples/node/pdf2json.js
+-let PDF_JS_SRC = path.join(require.resolve("pdfjs-dist"), "..", "build", "pdf.js");
++let PDF_JS_SRC = path.join(require.resolve("pdfjs-dist"), "..",  "legacy", "build", "pdf.js");
+ 
+ function render_page(pageData) {
+   let render_options = {
