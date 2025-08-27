@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'DocuSense',
+  title: 'the text summarizes',
   description: 'AI-powered document summarization',
 };
 

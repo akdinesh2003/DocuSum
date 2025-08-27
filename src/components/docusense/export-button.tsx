@@ -65,7 +65,7 @@ Tone: ${result.tone}
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `docusense-summary.${format}`;
+    a.download = `text-summarizer-summary.${format}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
