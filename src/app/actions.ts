@@ -51,12 +51,13 @@ async function getDocumentContent(inputType: 'text' | 'file', text?: string, fil
         return '';
     }
 
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+
     if (file.type === 'application/pdf') {
-        const fileBuffer = Buffer.from(await file.arrayBuffer());
         const data = await pdf(fileBuffer);
         return data.text;
     } else {
-        return await file.text();
+        return fileBuffer.toString('utf-8');
     }
 }
 
