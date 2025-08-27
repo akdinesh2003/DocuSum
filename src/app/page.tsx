@@ -2,7 +2,8 @@
 "use client";
 
 import React from "react";
-import { useFormStatus, useActionState } from "react";
+import { useFormStatus } from "react-dom";
+import { useActionState } from "react";
 import { generateSummaryAction, type FormState } from "./actions";
 import { useToast } from "@/hooks/use-toast";
 
