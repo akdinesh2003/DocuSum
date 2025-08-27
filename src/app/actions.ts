@@ -53,6 +53,7 @@ async function getDocumentContent(inputType: 'text' | 'file', text?: string, fil
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     if (file.type === 'application/pdf') {
+        // Use dynamic import for pdf-parse to avoid server-side bundling issues.
         const pdf = (await import('pdf-parse')).default;
         const data = await pdf(fileBuffer);
         return data.text;
@@ -85,7 +86,8 @@ export async function generateSummaryAction(
 
     const documentContent = await getDocumentContent(inputType, text, file);
 
-    if (!documentContent || documentContent.length < 50) {
+    // Strict check to ensure content was extracted.
+    if (!documentContent || documentContent.trim().length < 50) {
         return {
             status: "error",
             message: "Extracted document content is less than 50 characters. Please provide more content or a different file.",
@@ -101,6 +103,7 @@ export async function generateSummaryAction(
       summaryResult = await quickSummary({ documentContent });
     }
 
+    // Strict check to ensure the AI model returned a valid summary.
     if (!summaryResult || !summaryResult.summary) {
         return {
             status: "error",
@@ -131,7 +134,7 @@ export async function generateSummaryAction(
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     return {
       status: "error",
-      message: `Failed to generate summary: ${errorMessage}`,
+      message: `Failed to process document: ${errorMessage}`,
       result: null,
     };
   }
