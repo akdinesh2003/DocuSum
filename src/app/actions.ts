@@ -101,6 +101,14 @@ export async function generateSummaryAction(
       summaryResult = await quickSummary({ documentContent });
     }
 
+    if (!summaryResult || !summaryResult.summary) {
+        return {
+            status: "error",
+            message: "Failed to generate summary. The AI model returned an empty response. Please try again with different content.",
+            result: null,
+        };
+    }
+
     const qualityResult = await summaryQualityScoring({
       summary: summaryResult.summary,
       originalDocument: documentContent,
