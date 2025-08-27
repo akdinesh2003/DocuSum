@@ -53,9 +53,9 @@ async function getDocumentContent(inputType: 'text' | 'file', text?: string, fil
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     if (file.type === 'application/pdf') {
-        // The pdf-parse library is causing a persistent server crash.
-        // Returning an error message for now until a stable solution is found.
-        throw new Error("PDF processing is temporarily unavailable. Please use a text file.");
+        const pdf = (await import('pdf-parse')).default;
+        const data = await pdf(fileBuffer);
+        return data.text;
     } else {
         return fileBuffer.toString('utf-8');
     }
