@@ -18,8 +18,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['"PT Sans"', ...fontFamily.sans],
-        headline: ['"PT Sans"', ...fontFamily.sans],
+        body: ['"Inter"', ...fontFamily.sans],
+        headline: ['"Inter"', ...fontFamily.sans],
         code: ['"Source Code Pro"', ...fontFamily.mono],
       },
       colors: {
