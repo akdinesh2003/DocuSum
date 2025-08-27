@@ -53,7 +53,6 @@ async function getDocumentContent(inputType: 'text' | 'file', text?: string, fil
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     if (file.type === 'application/pdf') {
-        // Use dynamic import for pdf-parse to avoid server-side bundling issues.
         const pdf = (await import('pdf-parse')).default;
         const data = await pdf(fileBuffer);
         return data.text;
