@@ -2,7 +2,7 @@
 "use client";
 
 import React from "react";
-import { useFormStatus, useFormState as useActionState } from "react-dom";
+import { useFormStatus, useActionState } from "react";
 import { generateSummaryAction, type FormState } from "./actions";
 import { useToast } from "@/hooks/use-toast";
 
@@ -69,7 +69,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+    <div className="flex min-h-screen w-full flex-col">
        <div className="flex flex-col sm:gap-4 sm:py-4">
         <main className="flex-1 gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="container mx-auto p-4 py-8 md:p-12 flex flex-col items-center">
@@ -87,7 +87,7 @@ export default function Home() {
                 </TabsList>
                 <input type="hidden" name="inputType" value={inputType} />
                 <TabsContent value="text">
-                    <Card className="border-primary/20 shadow-lg shadow-primary/5 mt-4">
+                    <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3">
                             <FileTextIcon className="h-6 w-6 text-primary" />
@@ -101,13 +101,13 @@ export default function Home() {
                             <Textarea
                             name="documentContent"
                             placeholder="Start by pasting your document content here..."
-                            className="min-h-[300px] text-base resize-y bg-secondary border-primary/30 focus-visible:ring-primary"
+                            className="min-h-[300px] text-base resize-y focus-visible:ring-primary"
                             />
                         </CardContent>
                     </Card>
                 </TabsContent>
                 <TabsContent value="file">
-                    <Card className="border-primary/20 shadow-lg shadow-primary/5 mt-4">
+                    <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3">
                                 <Upload className="h-6 w-6 text-primary" />
@@ -119,7 +119,7 @@ export default function Home() {
                         </CardHeader>
                         <CardContent>
                             <div className="flex items-center justify-center w-full">
-                                <Label htmlFor="documentFile" className="flex flex-col items-center justify-center w-full h-48 border-2 border-primary/30 border-dashed rounded-lg cursor-pointer bg-secondary hover:bg-secondary/80">
+                                <Label htmlFor="documentFile" className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer bg-card hover:bg-muted">
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                         <Upload className="w-8 h-8 mb-4 text-primary" />
                                         {fileName ? (
@@ -140,7 +140,7 @@ export default function Home() {
             </Tabs>
 
 
-            <Card className="border-primary/20 shadow-lg shadow-primary/5">
+            <Card>
               <CardHeader>
                  <CardTitle className="flex items-center gap-3">
                   <Wand2 className="h-6 w-6 text-primary" />
@@ -151,7 +151,7 @@ export default function Home() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                 <RadioGroup defaultValue="quick" onValueChange={setSummaryType} className="flex space-x-4">
+                 <RadioGroup defaultValue="quick" onValueChange={setSummaryType} className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="quick" id="r1" />
                       <Label htmlFor="r1" className="text-base">Quick Summary</Label>

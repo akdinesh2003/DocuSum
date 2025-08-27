@@ -13,9 +13,9 @@ const FormSchema = z.object({
   documentContent: z.string().optional(),
   documentFile: z
     .any()
-    .refine((file) => !file || file.size <= MAX_FILE_SIZE, `Max file size is 4MB.`)
+    .refine((file) => !file || file.size === 0 || file.size <= MAX_FILE_SIZE, `Max file size is 4MB.`)
     .refine(
-      (file) => !file || file.type === '' || ACCEPTED_FILE_TYPES.includes(file.type),
+      (file) => !file || file.size === 0 || ACCEPTED_FILE_TYPES.includes(file.type),
       "Only .txt and .pdf files are accepted."
     ).optional(),
   summaryType: z.enum(["quick", "deep"]),
@@ -46,11 +46,7 @@ async function getDocumentContent(inputType: 'text' | 'file', text?: string, fil
         return text || '';
     }
 
-    if (!file) {
-        throw new Error('File not provided for file input type.');
-    }
-    
-    if (file.size === 0) {
+    if (!file || file.size === 0) {
         return '';
     }
 
@@ -110,7 +106,6 @@ export async function generateSummaryAction(
     
     const combinedResult: SummaryResult = {
         ...summaryResult,
-        // Ensure sentiment and tone are present, even if null for quick summary
         sentiment: 'sentiment' in summaryResult ? summaryResult.sentiment : null,
         tone: 'tone' in summaryResult ? summaryResult.tone : null,
         ...qualityResult
