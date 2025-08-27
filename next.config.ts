@@ -24,12 +24,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('pdf-parse', 'pdfjs-dist');
-    }
-    return config;
-  },
 };
 
 export default nextConfig;
