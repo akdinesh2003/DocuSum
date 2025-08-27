@@ -5,6 +5,7 @@ import { quickSummary, type QuickSummaryOutput } from "@/ai/flows/quick-summary"
 import { deepSummary, type DeepSummaryOutput } from "@/ai/flows/deep-summary";
 import { summaryQualityScoring, type SummaryQualityScoringOutput } from "@/ai/flows/summary-quality-scoring";
 import pdf from "pdf-parse";
+import path from "path";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const ACCEPTED_FILE_TYPES = ["text/plain", "application/pdf"];
@@ -15,7 +16,7 @@ const FormSchema = z.object({
     .any()
     .refine((file) => !file || file.size <= MAX_FILE_SIZE, `Max file size is 4MB.`)
     .refine(
-      (file) => !file || ACCEPTED_FILE_TYPES.includes(file.type),
+      (file) => !file || file.type === '' || ACCEPTED_FILE_TYPES.includes(file.type),
       "Only .txt and .pdf files are accepted."
     ).optional(),
   summaryType: z.enum(["quick", "deep"]),
@@ -30,7 +31,7 @@ const FormSchema = z.object({
     return false;
 }, {
     message: "Please either paste text (min 50 chars) or upload a file.",
-    path: ['documentContent']
+    path: ['documentContent'] // This error can be associated with a general field
 });
 
 export type SummaryResult = (QuickSummaryOutput | (Omit<DeepSummaryOutput, 'sentiment' | 'tone'> & { sentiment: string | null, tone: string | null })) & SummaryQualityScoringOutput;
@@ -41,6 +42,31 @@ export interface FormState {
   result: SummaryResult | null;
 }
 
+// pdf-parse uses pdf.js-dist, which may have trouble locating its worker script in a Next.js server environment.
+// This helper function ensures that we provide the correct path to the worker script.
+const getPdfParseOptions = () => {
+    const pdfjsDistPath = path.dirname(require.resolve('pdfjs-dist/package.json'));
+    const pdfWorkerPath = path.join(pdfjsDistPath, 'build', 'pdf.worker.js');
+    return {
+        pagerender: (pageData: any) => {
+            // We can check for pageData to be certain, but it's not strictly necessary for this fix
+            if (pageData === null) {
+                return '';
+            }
+            return pageData.getTextContent({
+                disableCombineTextItems: false,
+                includeMarkedContent: true,
+            }).then(function (textContent: any) {
+                return textContent.items.map(function (item: any) { return item.str; }).join(' ');
+            });
+        },
+        pdfjs: {
+            workerSrc: pdfWorkerPath
+        }
+    };
+};
+
+
 async function getDocumentContent(inputType: 'text' | 'file', text?: string, file?: File): Promise<string> {
     if (inputType === 'text') {
         return text || '';
@@ -49,10 +75,16 @@ async function getDocumentContent(inputType: 'text' | 'file', text?: string, fil
     if (!file) {
         throw new Error('File not provided for file input type.');
     }
+    
+    if (file.size === 0) {
+        return '';
+    }
 
     if (file.type === 'application/pdf') {
         const fileBuffer = Buffer.from(await file.arrayBuffer());
-        const data = await pdf(fileBuffer);
+        const options = getPdfParseOptions();
+        // The type definition for pdf-parse is not up to date with the options object, so we cast to any
+        const data = await pdf(fileBuffer, options as any);
         return data.text;
     } else {
         return await file.text();
@@ -86,7 +118,7 @@ export async function generateSummaryAction(
     if (!documentContent || documentContent.length < 50) {
         return {
             status: "error",
-            message: "Extracted document content is less than 50 characters.",
+            message: "Extracted document content is less than 50 characters. Please provide more content.",
             result: null,
         }
     }
