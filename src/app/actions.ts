@@ -88,7 +88,7 @@ export async function generateSummaryAction(
     if (!documentContent || documentContent.length < 50) {
         return {
             status: "error",
-            message: "Extracted document content is less than 50 characters. Please provide more content.",
+            message: "Extracted document content is less than 50 characters. Please provide more content or a different file.",
             result: null,
         }
     }
