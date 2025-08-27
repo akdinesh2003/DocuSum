@@ -1,7 +1,9 @@
+
 "use client";
 
 import React from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
+import { useActionState } from "react";
 import { generateSummaryAction, type FormState } from "./actions";
 import { useToast } from "@/hooks/use-toast";
 
@@ -40,7 +42,7 @@ function SubmitButton() {
 }
 
 export default function Home() {
-  const [state, formAction] = useFormState(generateSummaryAction, initialState);
+  const [state, formAction] = useActionState(generateSummaryAction, initialState);
   const [summaryType, setSummaryType] = React.useState("quick");
   const { toast } = useToast();
 
