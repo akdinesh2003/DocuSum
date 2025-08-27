@@ -5,7 +5,6 @@ import { quickSummary, type QuickSummaryOutput } from "@/ai/flows/quick-summary"
 import { deepSummary, type DeepSummaryOutput } from "@/ai/flows/deep-summary";
 import { summaryQualityScoring, type SummaryQualityScoringOutput } from "@/ai/flows/summary-quality-scoring";
 import pdf from "pdf-parse";
-import path from "path";
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
 const ACCEPTED_FILE_TYPES = ["text/plain", "application/pdf"];
@@ -42,31 +41,6 @@ export interface FormState {
   result: SummaryResult | null;
 }
 
-// pdf-parse uses pdf.js-dist, which may have trouble locating its worker script in a Next.js server environment.
-// This helper function ensures that we provide the correct path to the worker script.
-const getPdfParseOptions = () => {
-    const pdfjsDistPath = path.dirname(require.resolve('pdfjs-dist/package.json'));
-    const pdfWorkerPath = path.join(pdfjsDistPath, 'build', 'pdf.worker.js');
-    return {
-        pagerender: (pageData: any) => {
-            // We can check for pageData to be certain, but it's not strictly necessary for this fix
-            if (pageData === null) {
-                return '';
-            }
-            return pageData.getTextContent({
-                disableCombineTextItems: false,
-                includeMarkedContent: true,
-            }).then(function (textContent: any) {
-                return textContent.items.map(function (item: any) { return item.str; }).join(' ');
-            });
-        },
-        pdfjs: {
-            workerSrc: pdfWorkerPath
-        }
-    };
-};
-
-
 async function getDocumentContent(inputType: 'text' | 'file', text?: string, file?: File): Promise<string> {
     if (inputType === 'text') {
         return text || '';
@@ -82,9 +56,7 @@ async function getDocumentContent(inputType: 'text' | 'file', text?: string, fil
 
     if (file.type === 'application/pdf') {
         const fileBuffer = Buffer.from(await file.arrayBuffer());
-        const options = getPdfParseOptions();
-        // The type definition for pdf-parse is not up to date with the options object, so we cast to any
-        const data = await pdf(fileBuffer, options as any);
+        const data = await pdf(fileBuffer);
         return data.text;
     } else {
         return await file.text();
