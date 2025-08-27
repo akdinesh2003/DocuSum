@@ -12,7 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const SummaryQualityScoringInputSchema = z.object({
-  summary: z.string().describe('The summary to be evaluated.'),
+  summary: z.string().optional().describe('The summary to be evaluated.'),
   originalDocument: z.string().describe('The original document that was summarized.'),
 });
 export type SummaryQualityScoringInput = z.infer<typeof SummaryQualityScoringInputSchema>;
@@ -60,6 +60,12 @@ const summaryQualityScoringFlow = ai.defineFlow(
     outputSchema: SummaryQualityScoringOutputSchema,
   },
   async input => {
+    if (!input.summary) {
+      return {
+        qualityScore: 0,
+        justification: "The AI model failed to generate a summary, so no quality score could be determined."
+      }
+    }
     const {output} = await prompt(input);
     return output!;
   }
