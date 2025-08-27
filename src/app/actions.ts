@@ -22,7 +22,7 @@ const FormSchema = z.object({
   inputType: z.enum(["text", "file"]),
 }).refine(data => {
     if (data.inputType === 'text') {
-        return data.documentContent && data.documentContent.length >= 50;
+        return !!data.documentContent && data.documentContent.length >= 50;
     }
     if (data.inputType === 'file') {
         return !!data.documentFile && data.documentFile.size > 0;
@@ -53,7 +53,6 @@ async function getDocumentContent(inputType: 'text' | 'file', text?: string, fil
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     if (file.type === 'application/pdf') {
-        // Dynamically import pdf-parse ONLY when needed.
         const pdf = (await import('pdf-parse')).default;
         const data = await pdf(fileBuffer);
         return data.text;
@@ -86,7 +85,6 @@ export async function generateSummaryAction(
 
     const documentContent = await getDocumentContent(inputType, text, file);
 
-    // Strict check to ensure content was extracted.
     if (!documentContent || documentContent.trim().length < 50) {
         return {
             status: "error",
@@ -103,7 +101,6 @@ export async function generateSummaryAction(
       summaryResult = await quickSummary({ documentContent });
     }
 
-    // Strict check to ensure the AI model returned a valid summary.
     if (!summaryResult || !summaryResult.summary) {
         return {
             status: "error",
