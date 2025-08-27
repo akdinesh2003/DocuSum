@@ -65,7 +65,7 @@ Tone: ${result.tone}
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `text-summarizer-summary.${format}`;
+    a.download = `docusum-summary.${format}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

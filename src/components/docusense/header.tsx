@@ -6,7 +6,7 @@ export function Header() {
        <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-4 border border-primary/20">
         <ScanText className="h-10 w-10 text-primary" />
       </div>
-      <h1 className="text-5xl font-extrabold font-headline tracking-tight">the text summarizes</h1>
+      <h1 className="text-5xl font-extrabold font-headline tracking-tight">DocuSum</h1>
     </div>
   );
 }
